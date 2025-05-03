@@ -1,25 +1,68 @@
-# 🏀 NBA Interview - NLP Classification Model
+NBA/WNBA INTERVIEW CLASSIFICATION - NLP PROJECT
 
-This project performs **multi-label text classification** on NBA and WNBA post-game interview responses. The goal is to classify each quote by:
-- **Sentiment**: Positive or Negative
-- **Focus**: Team or Individual
+This project performs multi-label classification of player and coach interview quotes from NBA and WNBA post-game and draft events. 
+Each quote is classified on two binary axes:
 
-We fine-tuned a transformer-based model (DistilBERT) to predict these two labels from interview transcripts, and compared its performance with traditional machine learning approaches.
+1. Sentiment: Positive or Negative
+2. Focus: Team or Individual
 
----
+Quotes are sourced from asapsports.com and provided in a structured CSV format with labeled training data and unlabeled test data.
 
-## 📁 Dataset
+--------------------------------------------------------------------------------
+FILE DESCRIPTIONS AND HOW TO RUN EACH MODEL
 
-The dataset was sourced from [asapsports.com](https://www.asapsports.com/), consisting of interview quotes from:
-- NBA & WNBA Finals
-- NBA & WNBA Drafts
+1. baseline_model.py
+- Predicts "Positive" and "Team" for every quote (hardcoded baseline)
+- Run using:
+    python baseline_model.py
+- Output: submission.csv file in sample_outputs/ with accuracy printed in console
 
-Each quote is labeled along two binary axes:
-- `Positive`, `Negative` (one is 1, the other blank)
-- `Team`, `Individual` (one is 1, the other blank)
+2. Lr_model.py
+- Trains logistic regression models using TF-IDF features (one for Sentiment, one for Focus)
+- Run using:
+    python Lr_model.py
+- Output: submission.csv file in sample_outputs/ with accuracy printed in console
 
-### Sample Format:
-```csv
-quote,Positive,Negative,Team,Individual
-"We believe in each other and have to protect home court.",1,,1,
-"She means everything to me. She's been incredible.",1,,,1
+3. zer-shot-model.py
+- Uses zero-shot classification with facebook/bart-large-mnli (no training)
+- Classifies based on prompted labels using Hugging Face pipeline
+- Run using:
+    python zer-shot-model.py
+- Output: submission.csv file in sample_outputs/ with accuracy printed in console
+
+4. distilBERT_finetuned_model.py
+- Fine-tunes DistilBERT for both Sentiment and Focus classification using Hugging Face Trainer API
+- Trains on 100 rows and validates on 20 rows
+- Run using:
+    python distilBERT_finetuned_model.py
+- Output: 
+    - submission.csv file in sample_outputs/
+    - Accuracy for Sentiment and Focus printed in console
+
+--------------------------------------------------------------------------------
+REQUIREMENTS
+
+Install the following Python libraries using pip:
+
+- pandas
+- numpy
+- scikit-learn
+- torch
+- transformers
+- datasets
+
+Command to install all:
+pip install pandas numpy scikit-learn torch transformers datasets
+
+--------------------------------------------------------------------------------
+SUBMISSION FORMAT
+
+All models output predictions in the following CSV format:
+
+Positive,Negative,Team,Individual
+1,0,1,0
+0,1,0,1
+1,0,0,1
+...
+
+
